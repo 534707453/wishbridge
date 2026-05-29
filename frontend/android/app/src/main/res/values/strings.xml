@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">WishBridge</string>
+    <string name="title_activity_main">WishBridge</string>
+    <string name="package_name">com.wishbridge.app</string>
+    <string name="custom_url_scheme">com.wishbridge.app</string>
+</resources>

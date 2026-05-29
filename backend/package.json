@@ -1,0 +1,30 @@
+{
+  "name": "wishbridge-backend",
+  "version": "1.0.0",
+  "description": "WishBridge 情侣心愿应用后端服务",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "keywords": [
+    "wishbridge",
+    "couple",
+    "wish"
+  ],
+  "author": "WishBridge Team",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.6.1",
+    "sql.js": "^1.10.3"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
+  }
+}

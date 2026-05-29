@@ -1,0 +1,16 @@
+{
+  "appId": "com.wishbridge.app",
+  "appName": "WishBridge",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "Toast": {
+      "server": {
+        "hostname": "jp-2.frp.one"
+      }
+    }
+  }
+}
