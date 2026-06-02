@@ -97,15 +97,28 @@ async function handleUpdateMood() {
   
   const socket = getSocket()
   if (socket?.connected) {
+    // 监听自己的心情更新结果
+    const handleMoodUpdated = (data) => {
+      if (!data.userId || data.userId === authStore.user?.id) {
+        window.$toast?.success('心情已更新！')
+        updating.value = false
+        socket.off('mood:updated', handleMoodUpdated)
+      }
+    }
+    
+    const handleError = (data) => {
+      window.$toast?.error(data.error)
+      updating.value = false
+      socket.off('error', handleError)
+    }
+    
+    socket.on('mood:updated', handleMoodUpdated)
+    socket.on('error', handleError)
+    
     socket.emit('mood:update', { 
       mood: selectedMood.value,
       note: moodNote.value
     })
-    
-    setTimeout(() => {
-      window.$toast?.success('心情已更新！')
-      updating.value = false
-    }, 500)
   } else {
     const result = await moodsStore.updateMood(selectedMood.value, moodNote.value)
     
@@ -133,15 +146,16 @@ onMounted(async () => {
 <style scoped>
 .mood-page {
   min-height: 100vh;
-  background: var(--female-bg);
+  background: var(--bg);
 }
 
 .page-header {
-  background: var(--white);
+  background: var(--bg);
   padding: calc(20px + var(--safe-area-top)) 20px 16px;
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .page-title {
@@ -152,15 +166,14 @@ onMounted(async () => {
 
 .page-container {
   padding: 20px;
-  padding-bottom: calc(100px + var(--safe-area-bottom));
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 .mood-editor {
-  background: var(--white);
+  background: var(--bg-secondary);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: 0 4px 20px var(--shadow);
-  margin-bottom: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
 .editor-header {
@@ -184,14 +197,13 @@ onMounted(async () => {
 }
 
 .mood-display {
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .current-mood {
-  background: var(--white);
+  background: var(--bg-secondary);
   border-radius: var(--radius-lg);
-  padding: 24px;
-  box-shadow: 0 4px 20px var(--shadow);
+  padding: 20px;
 }
 
 .mood-main {
@@ -218,7 +230,7 @@ onMounted(async () => {
 }
 
 .mood-time {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-light);
 }
 
@@ -226,8 +238,9 @@ onMounted(async () => {
   font-size: 14px;
   color: var(--text-secondary);
   padding: 12px;
-  background: var(--female-bg);
+  background: var(--bg);
   border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
 }
 
 .mood-empty {
@@ -236,10 +249,9 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   padding: 48px;
-  background: var(--white);
+  background: var(--bg-secondary);
   border-radius: var(--radius-lg);
   color: var(--text-light);
-  box-shadow: 0 4px 20px var(--shadow);
 }
 
 .empty-icon {
@@ -252,9 +264,9 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 16px;
   padding: 16px;
-  background: var(--male-bg);
+  background: var(--bg-secondary);
   border-radius: var(--radius-md);
   font-size: 14px;
   color: var(--text-secondary);

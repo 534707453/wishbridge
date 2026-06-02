@@ -85,7 +85,7 @@ function selectMood(emoji) {
   align-items: center;
   gap: 6px;
   padding: 16px 8px;
-  background: var(--white);
+  background: var(--bg);
   border: 2px solid transparent;
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -97,13 +97,8 @@ function selectMood(emoji) {
 }
 
 .mood-option.selected {
-  border-color: var(--female-primary);
-  background: var(--female-bg);
-}
-
-.male-theme .mood-option.selected {
-  border-color: var(--male-primary);
-  background: var(--male-bg);
+  border-color: var(--primary);
+  background: var(--primary-light);
 }
 
 .mood-emoji {

@@ -1,59 +1,46 @@
 <template>
   <div class="profile-page">
-    <header class="profile-header">
-      <div class="avatar">
-        {{ user?.username?.charAt(0).toUpperCase() }}
-      </div>
-      <h2 class="username">{{ user?.username }}</h2>
-      <span class="gender-badge">{{ isFemale ? '👩 女孩子' : '👨 男孩子' }}</span>
+    <header class="page-header">
+      <h1 class="page-title">我的</h1>
     </header>
     
     <div class="page-container">
-      <div class="profile-section">
-        <h3 class="section-title">账号信息</h3>
-        
-        <div class="info-card">
-          <div class="info-item">
-            <span class="info-label">用户名</span>
-            <span class="info-value">{{ user?.username }}</span>
-          </div>
-          
-          <div class="info-item">
-            <span class="info-label">我的配对码</span>
-            <span class="info-value pair-code">{{ user?.pair_code }}</span>
-          </div>
-          
-          <div class="info-item">
-            <span class="info-label">配对状态</span>
-            <span :class="['info-value', { 'text-success': partner, 'text-warning': !partner }]">
-              {{ partner ? `已与 ${partner.username} 配对` : '未配对' }}
-            </span>
-          </div>
+      <div class="user-section">
+        <div class="user-avatar">
+          {{ user?.username?.charAt(0).toUpperCase() }}
+        </div>
+        <div class="user-info">
+          <h2 class="user-name">{{ user?.username }}</h2>
+          <span class="user-gender">{{ isFemale ? '👩 女生' : '👨 男生' }}</span>
         </div>
       </div>
       
-      <div class="profile-section">
-        <h3 class="section-title">设置</h3>
-        
-        <div class="menu-card">
-          <button class="menu-item" @click="showPasswordModal = true">
-            <span class="menu-icon">🔑</span>
-            <span class="menu-text">修改密码</span>
-            <span class="menu-arrow">→</span>
-          </button>
-          
-          <button class="menu-item" @click="showPairModal = true" v-if="!partner">
-            <span class="menu-icon">💝</span>
-            <span class="menu-text">绑定配对</span>
-            <span class="menu-arrow">→</span>
-          </button>
-          
-          <button class="menu-item danger" @click="handleUnbind" v-if="partner">
-            <span class="menu-icon">💔</span>
-            <span class="menu-text">解除配对</span>
-            <span class="menu-arrow">→</span>
+      <div class="pair-section" v-if="partner">
+        <div class="pair-info">
+          <span class="pair-label">已配对</span>
+          <span class="partner-name">{{ partner.username }}</span>
+        </div>
+        <button class="btn btn-secondary btn-sm" @click="handleUnbind">
+          解除配对
+        </button>
+      </div>
+      
+      <div class="pair-section" v-else>
+        <div class="pair-info">
+          <span class="pair-label">我的配对码</span>
+          <button class="pair-code-btn" @click="copyPairCode">
+            <span class="pair-code">{{ user?.pair_code }}</span>
+            <span class="copy-icon">{{ copied ? '✓' : '复制' }}</span>
           </button>
         </div>
+      </div>
+      
+      <div class="menu-section">
+        <button class="menu-item" @click="showPasswordModal = true">
+          <span class="menu-icon">🔑</span>
+          <span class="menu-text">修改密码</span>
+          <span class="menu-arrow">›</span>
+        </button>
       </div>
       
       <button class="btn btn-secondary logout-btn" @click="handleLogout">
@@ -62,7 +49,6 @@
       
       <div class="app-info">
         <p>WishBridge 🌉 v1.0.0</p>
-        <p>心愿桥 · 连接爱的桥梁</p>
       </div>
     </div>
     
@@ -131,6 +117,7 @@ const authStore = useAuthStore()
 
 const showPasswordModal = ref(false)
 const showPairModal = ref(false)
+const copied = ref(false)
 const passwordForm = ref({
   oldPassword: '',
   newPassword: ''
@@ -140,6 +127,22 @@ const pairCode = ref('')
 const user = computed(() => authStore.user)
 const partner = computed(() => authStore.partner)
 const isFemale = computed(() => authStore.isFemale)
+
+function copyPairCode() {
+  if (!user.value?.pair_code) return
+  
+  navigator.clipboard.writeText(user.value.pair_code)
+    .then(() => {
+      copied.value = true
+      window.$toast?.success('配对码已复制！')
+      setTimeout(() => {
+        copied.value = false
+      }, 2000)
+    })
+    .catch(() => {
+      window.$toast?.error('复制失败，请手动复制')
+    })
+}
 
 async function handleChangePassword() {
   if (!passwordForm.value.oldPassword || !passwordForm.value.newPassword) {
@@ -207,101 +210,123 @@ function handleLogout() {
 <style scoped>
 .profile-page {
   min-height: 100vh;
-  background: var(--female-bg);
+  background: var(--bg);
 }
 
-.profile-header {
-  background: linear-gradient(135deg, var(--female-primary) 0%, var(--female-secondary) 100%);
-  padding: calc(40px + var(--safe-area-top)) 20px 40px;
-  text-align: center;
-  color: var(--white);
+.page-header {
+  padding: calc(16px + var(--safe-area-top)) 20px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
 }
 
-.avatar {
-  width: 80px;
-  height: 80px;
-  background: var(--white);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--female-primary);
-  margin: 0 auto 16px;
-}
-
-.username {
+.page-title {
   font-size: 24px;
   font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.gender-badge {
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-.page-container {
-  margin-top: -20px;
-  padding: 20px;
-  padding-bottom: calc(100px + var(--safe-area-bottom));
-}
-
-.profile-section {
-  margin-bottom: 24px;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-  padding-left: 4px;
-}
-
-.info-card,
-.menu-card {
-  background: var(--white);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 20px var(--shadow);
-  overflow: hidden;
-}
-
-.info-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.info-item:last-child {
-  border-bottom: none;
-}
-
-.info-label {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.info-value {
-  font-size: 14px;
-  font-weight: 500;
   color: var(--text-primary);
 }
 
+.page-container {
+  padding: 20px;
+  padding-bottom: calc(20px + var(--safe-area-bottom));
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0;
+}
+
+.user-avatar {
+  width: 64px;
+  height: 64px;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-white);
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.user-gender {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.pair-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  margin-bottom: 20px;
+}
+
+.pair-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pair-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.partner-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.pair-code-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pair-code-btn:active {
+  transform: scale(0.98);
+  background: var(--bg-hover);
+}
+
 .pair-code {
+  font-size: 18px;
+  font-weight: 600;
   letter-spacing: 2px;
-  color: var(--female-primary);
+  color: var(--primary);
 }
 
-.text-success {
-  color: #4CAF50;
+.copy-icon {
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
-.text-warning {
-  color: #FF9800;
+.menu-section {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
 }
 
 .menu-item {
@@ -309,29 +334,16 @@ function handleLogout() {
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 16px 20px;
-  background: none;
+  padding: 16px;
+  background: transparent;
   border: none;
-  border-bottom: 1px solid #f0f0f0;
   text-align: left;
   cursor: pointer;
   transition: background var(--transition-fast);
 }
 
-.menu-item:last-child {
-  border-bottom: none;
-}
-
 .menu-item:active {
-  background: #f8f8f8;
-}
-
-.menu-item.danger .menu-text {
-  color: #F44336;
-}
-
-.menu-item.danger .menu-icon {
-  opacity: 0.7;
+  background: var(--bg-hover);
 }
 
 .menu-icon {
@@ -345,25 +357,20 @@ function handleLogout() {
 }
 
 .menu-arrow {
-  font-size: 14px;
+  font-size: 20px;
   color: var(--text-light);
 }
 
 .logout-btn {
   width: 100%;
-  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .app-info {
   text-align: center;
-  margin-top: 32px;
   padding: 16px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-light);
-}
-
-.app-info p {
-  margin: 4px 0;
 }
 
 .modal-overlay {
@@ -378,17 +385,17 @@ function handleLogout() {
 }
 
 .modal-content {
-  background: var(--white);
+  background: var(--bg);
   border-radius: var(--radius-lg);
   padding: 24px;
   width: 100%;
-  max-width: 400px;
+  max-width: 360px;
 }
 
 .modal-title {
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -399,14 +406,10 @@ function handleLogout() {
   margin-bottom: 20px;
 }
 
-.modal-content .input-group {
-  margin-bottom: 16px;
-}
-
 .modal-actions {
   display: flex;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .modal-actions .btn {

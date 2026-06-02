@@ -34,7 +34,7 @@
           <template #actions>
             <button 
               v-if="isMale && wish.status === 'pending' && wish.modify_status !== 'pending'"
-              class="btn btn-primary"
+              class="btn btn-primary btn-sm"
               @click="markRealized(wish)"
             >
               实现 ✨
@@ -42,7 +42,7 @@
             
             <button 
               v-if="isMale && wish.status === 'pending' && wish.modify_status !== 'pending'"
-              class="btn btn-secondary"
+              class="btn btn-secondary btn-sm"
               @click="showModifyModal(wish)"
             >
               申请修改
@@ -50,13 +50,13 @@
             
             <template v-if="isFemale && wish.modify_status === 'pending'">
               <button 
-                class="btn btn-primary"
+                class="btn btn-primary btn-sm"
                 @click="respondModify(wish, true)"
               >
                 同意 ✓
               </button>
               <button 
-                class="btn btn-secondary"
+                class="btn btn-secondary btn-sm"
                 @click="respondModify(wish, false)"
               >
                 拒绝
@@ -65,7 +65,7 @@
             
             <button 
               v-if="isFemale && wish.sender_id === user?.id"
-              class="btn btn-secondary"
+              class="btn btn-secondary btn-sm"
               @click="deleteWish(wish)"
             >
               删除
@@ -205,15 +205,16 @@ onMounted(() => {
 <style scoped>
 .wishes-page {
   min-height: 100vh;
-  background: var(--female-bg);
+  background: var(--bg);
 }
 
 .page-header {
-  background: var(--white);
+  background: var(--bg);
   padding: calc(20px + var(--safe-area-top)) 20px 16px;
   position: sticky;
   top: 0;
   z-index: 10;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .page-title {
@@ -240,17 +241,13 @@ onMounted(() => {
 }
 
 .tab.active {
-  background: var(--female-primary);
-  color: var(--white);
-}
-
-.male-theme .tab.active {
-  background: var(--male-primary);
+  background: var(--primary);
+  color: var(--text-white);
 }
 
 .page-container {
   padding: 20px;
-  padding-bottom: calc(100px + var(--safe-area-bottom));
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 .loading-state,
@@ -296,7 +293,7 @@ onMounted(() => {
 }
 
 .modal-content {
-  background: var(--white);
+  background: var(--bg);
   border-radius: var(--radius-lg);
   padding: 24px;
   width: 100%;

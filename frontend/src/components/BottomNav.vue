@@ -9,7 +9,6 @@
     >
       <span class="nav-icon">{{ item.icon }}</span>
       <span class="nav-label">{{ item.label }}</span>
-      <span class="nav-indicator"></span>
     </router-link>
   </nav>
 </template>
@@ -49,72 +48,40 @@ const navItems = computed(() => {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
+  background: var(--bg);
   padding: 8px 0;
   padding-bottom: calc(8px + var(--safe-area-bottom));
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -1px 0 var(--border-light);
   z-index: 100;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 8px 16px;
+  gap: 4px;
+  padding: 8px 12px;
   text-decoration: none;
   color: var(--text-light);
   transition: all var(--transition-fast);
-  position: relative;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
 }
 
 .nav-item:active {
-  transform: scale(0.92);
+  transform: scale(0.96);
 }
 
 .nav-item.active {
-  color: var(--female-primary);
-}
-
-body.male-theme .nav-item.active {
-  color: var(--male-primary);
+  color: var(--primary);
+  background: var(--bg-secondary);
 }
 
 .nav-icon {
-  font-size: 24px;
-  transition: transform var(--transition-fast);
-}
-
-.nav-item.active .nav-icon {
-  transform: scale(1.15);
+  font-size: 22px;
 }
 
 .nav-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-}
-
-.nav-indicator {
-  position: absolute;
-  bottom: -2px;
-  width: 20px;
-  height: 3px;
-  background: var(--female-gradient);
-  border-radius: 3px;
-  opacity: 0;
-  transform: scaleX(0);
-  transition: all var(--transition-fast);
-}
-
-body.male-theme .nav-indicator {
-  background: var(--male-gradient);
-}
-
-.nav-item.active .nav-indicator {
-  opacity: 1;
-  transform: scaleX(1);
 }
 </style>

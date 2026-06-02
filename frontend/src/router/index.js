@@ -53,6 +53,11 @@ const routes = [
     name: 'ModifyRequest',
     component: () => import('@/views/ModifyRequest.vue'),
     meta: { requiresAuth: true, femaleOnly: true }
+  },
+  {
+    path: '/server-error',
+    name: 'ServerError',
+    component: () => import('@/views/ServerError.vue')
   }
 ]
 

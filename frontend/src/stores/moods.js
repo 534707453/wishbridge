@@ -76,6 +76,14 @@ export const useMoodsStore = defineStore('moods', () => {
     }
   }
 
+  function setCurrentMood(moodData) {
+    currentMood.value = {
+      mood: moodData.mood,
+      note: moodData.note,
+      updated_at: moodData.updated_at
+    }
+  }
+
   return {
     currentMood,
     partnerMood,
@@ -86,6 +94,7 @@ export const useMoodsStore = defineStore('moods', () => {
     fetchPartnerMood,
     updateMood,
     fetchHistory,
-    setPartnerMood
+    setPartnerMood,
+    setCurrentMood
   }
 })

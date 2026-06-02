@@ -1,5 +1,7 @@
 <template>
   <div :class="['app-wrapper', { 'male-theme': isMale }]">
+    <ConnectionStatus />
+    
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in">
         <component :is="Component" />
@@ -18,6 +20,7 @@ import { useAuthStore } from '@/stores/auth'
 import { initSocket, requestNotificationPermission } from '@/services/socket'
 import BottomNav from '@/components/BottomNav.vue'
 import Toast from '@/components/Toast.vue'
+import ConnectionStatus from '@/components/ConnectionStatus.vue'
 
 const authStore = useAuthStore()
 

@@ -5,42 +5,31 @@ const { run, get, all, generatePairCode } = require('../database');
 const config = require('../config');
 const authMiddleware = require('../middleware/auth');
 const logger = require('../utils/logger');
+const { ValidationError, NotFoundError, UnauthorizedError, ConflictError } = require('../utils/errors');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
   try {
     const { username, password, gender, pair_code } = req.body;
     logger.info('注册请求', { username, gender, hasPairCode: !!pair_code });
     
     if (!username || !password || !gender) {
-      return res.status(400).json({ 
-        success: false, 
-        error: '用户名、密码和性别为必填项' 
-      });
+      throw new ValidationError('用户名、密码和性别为必填项');
     }
     
     if (!['male', 'female'].includes(gender)) {
-      return res.status(400).json({ 
-        success: false, 
-        error: '性别必须是 male 或 female' 
-      });
+      throw new ValidationError('性别必须是 male 或 female', 'gender');
     }
     
     if (password.length < 6) {
-      return res.status(400).json({ 
-        success: false, 
-        error: '密码长度至少6位' 
-      });
+      throw new ValidationError('密码长度至少6位', 'password');
     }
     
     const existingUser = get('SELECT id FROM users WHERE username = ?', username);
     if (existingUser) {
       logger.warn('注册失败 - 用户名已存在', { username });
-      return res.status(400).json({ 
-        success: false, 
-        error: '用户名已存在' 
-      });
+      throw new ConflictError('用户名已存在');
     }
     
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -58,17 +47,11 @@ router.post('/register', async (req, res) => {
       const partner = get('SELECT id, gender FROM users WHERE pair_code = ? AND partner_id IS NULL', pair_code);
       if (!partner) {
         logger.warn('注册失败 - 配对码无效', { pair_code });
-        return res.status(400).json({ 
-          success: false, 
-          error: '配对码无效或已被使用' 
-        });
+        throw new ValidationError('配对码无效或已被使用', 'pair_code');
       }
       if (partner.gender === gender) {
         logger.warn('注册失败 - 同性别配对', { gender });
-        return res.status(400).json({ 
-          success: false, 
-          error: '只能与异性配对' 
-        });
+        throw new ValidationError('只能与异性配对', 'gender');
       }
       partnerId = partner.id;
       logger.info('自动配对成功', { partnerId });
@@ -102,39 +85,29 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('注册错误', err);
-    res.status(500).json({ success: false, error: '服务器内部错误' });
+    next(err);
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
   try {
     const { username, password } = req.body;
     logger.info('登录请求', { username });
     
     if (!username || !password) {
-      return res.status(400).json({ 
-        success: false, 
-        error: '用户名和密码为必填项' 
-      });
+      throw new ValidationError('用户名和密码为必填项');
     }
     
     const user = get('SELECT * FROM users WHERE username = ?', username);
     if (!user) {
       logger.warn('登录失败 - 用户不存在', { username });
-      return res.status(400).json({ 
-        success: false, 
-        error: '用户名或密码错误' 
-      });
+      throw new UnauthorizedError('用户名或密码错误');
     }
     
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       logger.warn('登录失败 - 密码错误', { username });
-      return res.status(400).json({ 
-        success: false, 
-        error: '用户名或密码错误' 
-      });
+      throw new UnauthorizedError('用户名或密码错误');
     }
     
     let partner = null;
@@ -164,27 +137,20 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('登录错误', err);
-    res.status(500).json({ success: false, error: '服务器内部错误' });
+    next(err);
   }
 });
 
-router.put('/password', authMiddleware, async (req, res) => {
+router.put('/password', authMiddleware, async (req, res, next) => {
   try {
     const { oldPassword, newPassword } = req.body;
     
     if (!oldPassword || !newPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        error: '旧密码和新密码为必填项' 
-      });
+      throw new ValidationError('旧密码和新密码为必填项');
     }
     
     if (newPassword.length < 6) {
-      return res.status(400).json({ 
-        success: false, 
-        error: '新密码长度至少6位' 
-      });
+      throw new ValidationError('新密码长度至少6位', 'newPassword');
     }
     
     const user = get('SELECT password FROM users WHERE id = ?', req.user.id);
@@ -192,10 +158,7 @@ router.put('/password', authMiddleware, async (req, res) => {
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
       logger.warn('修改密码失败 - 旧密码错误', { userId: req.user.id });
-      return res.status(401).json({ 
-        success: false, 
-        error: '旧密码错误' 
-      });
+      throw new UnauthorizedError('旧密码错误');
     }
     
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -208,21 +171,17 @@ router.put('/password', authMiddleware, async (req, res) => {
       message: '密码修改成功'
     });
   } catch (err) {
-    logger.error('修改密码错误', err);
-    res.status(500).json({ success: false, error: '服务器内部错误' });
+    next(err);
   }
 });
 
-router.get('/me', authMiddleware, (req, res) => {
+router.get('/me', authMiddleware, (req, res, next) => {
   try {
     const user = get('SELECT id, username, gender, pair_code, partner_id, created_at FROM users WHERE id = ?', req.user.id);
     
     if (!user) {
       logger.warn('获取用户信息失败 - 用户不存在', { userId: req.user.id });
-      return res.status(404).json({ 
-        success: false, 
-        error: '用户不存在' 
-      });
+      throw new NotFoundError('用户不存在');
     }
     
     let partner = null;
@@ -240,8 +199,7 @@ router.get('/me', authMiddleware, (req, res) => {
       }
     });
   } catch (err) {
-    logger.error('获取用户信息错误', err);
-    res.status(500).json({ success: false, error: '服务器内部错误' });
+    next(err);
   }
 });
 

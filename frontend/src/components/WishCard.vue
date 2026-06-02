@@ -63,61 +63,23 @@ function getStatusText(wish) {
 }
 </script>
 
-<script>
-export default {
-  methods: {
-    getStatusClass() {
-      if (this.wish.modify_status === 'pending') return 'tag-pending-request'
-      return this.wish.status === 'realized' ? 'tag-realized' : 'tag-pending'
-    },
-    getStatusText() {
-      if (this.wish.modify_status === 'pending') return '待处理'
-      return this.wish.status === 'realized' ? '已实现' : '待实现'
-    }
-  }
-}
-</script>
-
 <style scoped>
 .wish-card {
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-}
-
-.wish-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--female-primary), var(--female-secondary));
-  opacity: 0;
-  transition: opacity var(--transition-fast);
-}
-
-.wish-card:hover::before {
-  opacity: 1;
+  background: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 16px;
 }
 
 .wish-card.is-realized {
   opacity: 0.85;
 }
 
-.wish-card.is-realized::before {
-  background: linear-gradient(90deg, #4CAF50, #81C784);
-  opacity: 1;
-}
-
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .card-info {
@@ -129,14 +91,14 @@ export default {
 .sender-avatar {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, var(--female-bg), #FFE4EC);
+  background: var(--primary-light);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   font-weight: 700;
-  color: var(--female-primary);
+  color: var(--primary);
 }
 
 .card-meta {
@@ -152,15 +114,15 @@ export default {
 }
 
 .card-time {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-light);
 }
 
 .card-content {
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.6;
   color: var(--text-primary);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   word-break: break-word;
 }
 
@@ -169,9 +131,9 @@ export default {
   align-items: flex-start;
   gap: 10px;
   padding: 14px;
-  background: linear-gradient(135deg, #FFF3E0, #FFE0B2);
-  border-radius: 14px;
-  margin-bottom: 16px;
+  background: #FFF3E0;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
 }
 
 .notice-icon {
@@ -201,10 +163,5 @@ export default {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-}
-
-.card-actions .btn {
-  padding: 10px 18px;
-  font-size: 13px;
 }
 </style>

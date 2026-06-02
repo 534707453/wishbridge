@@ -1,22 +1,15 @@
 <template>
   <div class="home-page">
     <header class="home-header">
-      <div class="header-bg"></div>
-      <div class="header-content">
-        <div class="greeting-section">
-          <div class="greeting-badge">{{ greeting }}</div>
-          <h1 class="greeting-text">{{ user?.username }}</h1>
-        </div>
-        <div class="logo-wrapper">
-          <span class="logo-icon">🌉</span>
-        </div>
+      <div class="greeting-section">
+        <div class="greeting-badge">{{ greeting }}</div>
+        <h1 class="greeting-text">{{ user?.username }}</h1>
       </div>
     </header>
     
     <div class="page-container">
       <section class="mood-section" v-if="partner">
         <div class="section-card mood-card">
-          <div class="card-accent"></div>
           <div class="section-header">
             <h2 class="section-title">
               <span class="title-icon">{{ isFemale ? '💝' : '👀' }}</span>
@@ -24,7 +17,7 @@
             </h2>
           </div>
           <div class="mood-display" v-if="displayMood && displayMood.mood">
-            <span class="mood-emoji animate-heart-beat">{{ displayMood.mood }}</span>
+            <span class="mood-emoji">{{ displayMood.mood }}</span>
             <div class="mood-info">
               <span class="mood-label">{{ getMoodLabel(displayMood.mood) }}</span>
               <span class="mood-time">{{ formatMoodTime(displayMood.updated_at) }}</span>
@@ -45,7 +38,7 @@
           </h2>
           <router-link to="/wishes" class="see-more">
             查看全部
-            <span class="arrow">→</span>
+            <span class="arrow">›</span>
           </router-link>
         </div>
         
@@ -54,7 +47,6 @@
             v-for="(wish, index) in recentWishes" 
             :key="wish.id" 
             :wish="wish"
-            :style="{ animationDelay: `${index * 0.1}s` }"
           >
             <template #actions>
               <button 
@@ -194,28 +186,11 @@ onMounted(async () => {
 <style scoped>
 .home-page {
   min-height: 100vh;
-  background: var(--female-bg);
+  background: var(--bg);
 }
 
 .home-header {
-  position: relative;
-  padding: calc(20px + var(--safe-area-top)) 20px 60px;
-  overflow: hidden;
-}
-
-.header-bg {
-  position: absolute;
-  inset: 0;
-  background: var(--female-gradient);
-  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
-}
-
-.header-content {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  color: white;
+  padding: calc(20px + var(--safe-area-top)) 20px 16px;
 }
 
 .greeting-section {
@@ -225,55 +200,26 @@ onMounted(async () => {
 }
 
 .greeting-badge {
-  font-size: 12px;
-  opacity: 0.9;
+  font-size: 13px;
+  color: var(--text-secondary);
 }
 
 .greeting-text {
   font-size: 28px;
   font-weight: 700;
-}
-
-.logo-wrapper {
-  width: 60px;
-  height: 60px;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-icon {
-  font-size: 32px;
-  animation: float 3s ease-in-out infinite;
+  color: var(--text-primary);
 }
 
 .page-container {
-  margin-top: -40px;
-  padding: 0 16px;
-  padding-bottom: calc(90px + var(--safe-area-bottom));
-  position: relative;
-  z-index: 1;
+  padding: 0 20px;
+  padding-bottom: calc(80px + var(--safe-area-bottom));
 }
 
 .section-card {
-  background: white;
-  border-radius: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
   padding: 20px;
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.card-accent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: var(--female-gradient);
+  margin-bottom: 16px;
 }
 
 .section-header {
@@ -285,7 +231,7 @@ onMounted(async () => {
 
 .section-title {
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
   display: flex;
   align-items: center;
@@ -298,23 +244,11 @@ onMounted(async () => {
 
 .see-more {
   font-size: 13px;
-  color: var(--female-primary);
+  color: var(--primary);
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-.see-more .arrow {
-  transition: transform var(--transition-fast);
-}
-
-.see-more:hover .arrow {
-  transform: translateX(4px);
-}
-
-.mood-card {
-  margin-bottom: 24px;
 }
 
 .mood-display {
@@ -324,7 +258,7 @@ onMounted(async () => {
 }
 
 .mood-emoji {
-  font-size: 56px;
+  font-size: 52px;
 }
 
 .mood-info {
@@ -334,13 +268,13 @@ onMounted(async () => {
 }
 
 .mood-label {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .mood-time {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-light);
 }
 
@@ -358,7 +292,7 @@ onMounted(async () => {
 }
 
 .wishes-section {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .wishes-grid {
@@ -372,9 +306,8 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
-  background: white;
-  border-radius: 20px;
-  box-shadow: var(--shadow-md);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
 }
 
 .empty-icon {
@@ -385,10 +318,6 @@ onMounted(async () => {
 .empty-text {
   color: var(--text-light);
   margin-bottom: 8px;
-}
-
-.pair-card {
-  margin-top: 20px;
 }
 
 .pair-header {
@@ -404,7 +333,7 @@ onMounted(async () => {
 
 .pair-title {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
@@ -415,8 +344,9 @@ onMounted(async () => {
 }
 
 .pair-code-box {
-  background: linear-gradient(135deg, var(--female-bg) 0%, #FFE4EC 100%);
-  border-radius: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
   padding: 20px;
   text-align: center;
   margin-bottom: 20px;
@@ -424,16 +354,16 @@ onMounted(async () => {
 
 .code-label {
   display: block;
-  font-size: 12px;
-  color: var(--text-light);
+  font-size: 13px;
+  color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
 .code-value {
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 6px;
-  color: var(--female-primary);
+  color: var(--primary);
 }
 
 .pair-form {

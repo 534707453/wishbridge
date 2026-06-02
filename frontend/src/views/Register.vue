@@ -1,13 +1,14 @@
 <template>
   <div class="register-page">
-    <div class="register-bg">
-      <div class="bg-decoration"></div>
-    </div>
-    
     <div class="register-container">
       <div class="register-header">
-        <router-link to="/login" class="back-btn">←</router-link>
+        <router-link to="/login" class="back-btn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+        </router-link>
         <h1 class="title">创建账号</h1>
+        <div style="width: 40px"></div>
       </div>
       
       <form class="register-form" @submit.prevent="handleRegister">
@@ -79,7 +80,7 @@
         </div>
         
         <button type="submit" class="btn btn-primary register-btn" :disabled="loading">
-          <span v-if="loading" class="loading">注册中...</span>
+          <span v-if="loading">注册中...</span>
           <span v-else>注 册</span>
         </button>
       </form>
@@ -146,38 +147,19 @@ async function handleRegister() {
 <style scoped>
 .register-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--female-bg) 0%, #FFE4EC 100%);
+  background: var(--bg);
   padding: 20px;
-  position: relative;
-}
-
-.register-bg {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.bg-decoration {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(255, 107, 157, 0.15) 0%, transparent 70%);
-  top: -200px;
-  left: -200px;
-  border-radius: 50%;
 }
 
 .register-container {
   max-width: 400px;
   margin: 0 auto;
-  position: relative;
-  z-index: 1;
 }
 
 .register-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
   margin-bottom: 32px;
   padding-top: 20px;
@@ -189,12 +171,15 @@ async function handleRegister() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--white);
-  border-radius: var(--radius-full);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
   text-decoration: none;
-  font-size: 20px;
   color: var(--text-primary);
-  box-shadow: 0 2px 10px var(--shadow);
+  transition: background var(--transition-fast);
+}
+
+.back-btn:active {
+  background: var(--bg-hover);
 }
 
 .title {
@@ -204,10 +189,10 @@ async function handleRegister() {
 }
 
 .register-form {
-  background: var(--white);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 32px 24px;
-  box-shadow: 0 8px 32px var(--shadow);
+  padding: 28px;
 }
 
 .gender-select {
@@ -222,8 +207,8 @@ async function handleRegister() {
   align-items: center;
   gap: 8px;
   padding: 20px;
-  background: var(--female-bg);
-  border: 2px solid transparent;
+  background: var(--bg);
+  border: 2px solid var(--border-light);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition: all var(--transition-fast);
@@ -236,9 +221,9 @@ async function handleRegister() {
 }
 
 .gender-option.active {
-  border-color: var(--female-primary);
-  background: var(--white);
-  color: var(--female-primary);
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
 .gender-icon {
@@ -248,8 +233,9 @@ async function handleRegister() {
 .register-btn {
   width: 100%;
   margin-top: 8px;
-  padding: 16px;
-  font-size: 18px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .input-hint {

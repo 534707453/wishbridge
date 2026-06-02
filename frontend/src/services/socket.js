@@ -84,10 +84,18 @@ export function initSocket() {
   })
 
   socket.on('mood:updated', (data) => {
-    console.log('Partner mood updated:', data)
+    console.log('Mood updated:', data)
     const moodsStore = useMoodsStore()
-    moodsStore.setPartnerMood(data)
-    showNotification('心情更新', `${data.username} 的心情变成了 ${data.mood}`)
+    const authStore = useAuthStore()
+    
+    if (data.userId && data.userId !== authStore.user?.id) {
+      // 来自对方的心情更新
+      moodsStore.setPartnerMood(data)
+      showNotification('心情更新', `${data.username} 的心情变成了 ${data.mood}`)
+    } else {
+      // 自己的心情更新
+      moodsStore.setCurrentMood(data)
+    }
   })
 
   socket.on('notification', (data) => {
